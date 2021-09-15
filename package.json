@@ -1,0 +1,23 @@
+{
+  "name": "svg-outliner",
+  "version": "1.0.0",
+  "description": "A node script to post-process the outlining of SVG paths",
+  "main": "index.js",
+  "scripts": {
+    "watch": "node main.js",
+    "dev": "nodemon main.js demo/source demo/target --nosize",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Dave Stewart",
+  "license": "ISC",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.10",
+    "chokidar": "^3.5.2",
+    "colors": "^1.4.0",
+    "makerjs": "^0.17.1",
+    "yargs": "^17.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.12"
+  }
+}
