@@ -1,7 +1,3 @@
-require('colors')
-const chokidar = require('chokidar')
-const Fs = require('fs')
-const Path = require('path')
 const cheerio = require('cheerio')
 const maker = require('makerjs')
 
@@ -42,13 +38,25 @@ function processPath (pathData, width, cap = 'miter') {
   return maker.exporter.toSVGPathData({ models: { outline } }, false, [0, 0])
 }
 
-function processSvg (input) {
+/**
+ * Process SVG and convert paths to fills
+ *
+ * @param   {string}  input
+ * @param   {object}  log
+ * @return  {string}
+ */
+function processSvg (input, log) {
   // load file
   const options = { xml: { normalizeWhitespace: true } }
   const $ = cheerio.load(input, options)
 
   // paths
   const paths = $('path[stroke-width]')
+
+  // logs
+  log.outline = paths.length
+
+  // process
   if (paths.length) {
     // process
     paths.each(function (i, e) {
@@ -56,7 +64,6 @@ function processSvg (input) {
       const $e = $(e)
 
       // variables
-      const id = $e.attr('id')
       const fillRule = $e.attr('fill-rule')
       const width = $e.attr('stroke-width')
       const join = $e.attr('stroke-linejoin')
@@ -83,71 +90,9 @@ function processSvg (input) {
     // render
     return $.root().html()
   }
+
+  // return unchanged
+  return input
 }
 
-// ---------------------------------------------------------------------------------------------------------------------
-// files
-// ---------------------------------------------------------------------------------------------------------------------
-
-function relPath (path) {
-  return path.replace(__dirname, '')
-}
-
-function processFile (filename, options) {
-  // paths
-  const oldFile = Path.join(options.source, filename)
-  const newFile = Path.join(options.target, filename)
-
-  // process
-  let input = Fs.readFileSync(oldFile).toString()
-  if (input) {
-    // remove root width and height
-    if (options.nosize) {
-      input = input.replace(/<svg.+?>/, match => match.replace(/ \b(width|height)="\d+"/g, ''))
-    }
-
-    // process
-    let output = processSvg(input)
-
-    // if the data has changed
-    if (output && output !== input) {
-      Fs.writeFileSync(newFile, output)
-      console.log('Updated:', relPath(newFile).green)
-    }
-
-    // if target folder is not the same as source
-    else if (newFile !== oldFile) {
-      Fs.writeFileSync(newFile, input)
-      console.log('Copied: ', relPath(newFile).grey)
-    }
-  }
-}
-
-/**
- * Main function to watch a folder
- *
- * @param options             Options to pass to the script
- * @param options.source      source folder path (relative or absolute)
- * @param options.target      target folder path (relative or absolute) defaults to the source folder, and will overwrite the source file
- * @param [options.nosize]    an optional flag to remove width and height attributes from the SVG
- */
-function watchFolder (options) {
-  // callback
-  const onChange = filepath => {
-    const filename = filepath.replace(options.source, '')
-    processFile(filename, options)
-  }
-
-  // watch
-  const glob = Path.join(options.source, '*.svg')
-  chokidar
-    .watch(glob, {
-      persistent: true,
-    })
-    .on('add', onChange)
-    .on('change', onChange)
-}
-
-module.exports = {
-  watchFolder
-}
+module.exports = processSvg

@@ -1,6 +1,7 @@
 const Path = require('path')
 const Fs = require('fs')
-const { watchFolder } = require('./index')
+require('colors')
+const { watchFolder } = require('./src/watch.js')
 
 // options
 const options = require('yargs/yargs')(process.argv.slice(2)).argv
