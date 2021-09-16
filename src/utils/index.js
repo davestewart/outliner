@@ -8,7 +8,7 @@ function colorize (value) {
     return text.grey
   }
   if (value === 'updated') {
-    return text.green
+    return text.cyan
   }
   if (value === 'error') {
     return text.red
