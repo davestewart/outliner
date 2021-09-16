@@ -82,9 +82,12 @@ function processSvg (input, log) {
         : $e.removeAttr('fill-rule')
 
       // cleanup
-      $e.removeAttr('stroke')
-      $e.removeAttr('stroke-width')
-      $e.removeAttr('stroke-linecap')
+      const attrs = Object.keys($e.get(0).attribs)
+      attrs.forEach(attr => {
+        if (attr.startsWith('stroke')) {
+          $e.removeAttr(attr)
+        }
+      })
     })
 
     // render
