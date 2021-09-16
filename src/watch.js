@@ -5,16 +5,37 @@ const chokidar = require('chokidar')
 const Table = require('cli-table3')
 const { colorize } = require('./utils')
 
-// tasks
-const { outline, unsize } = require('./tasks')
+/**
+ * Build the queue of tasks from the supplied options
+ *
+ * @param   {object}    options           The main options object
+ * @param   {object}    options.tasks     A hash of task names (should match files in tasks folder)
+ * @return  {function[]}
+ */
+function getTasks (options) {
+  return Object.keys(options.tasks).reduce((tasks, name) => {
+    const state = options.tasks[name]
+    if (state) {
+      try {
+        const handler = require(`./tasks/${name}.js`)
+        tasks.push(handler)
+      }
+      catch (err) {
+        console.warn(`Unable to load task "${name}"`)
+      }
+    }
+    return tasks
+  }, [])
+}
 
 /**
  * Process a single file
  *
- * @param file        The filename to load
- * @param options     The processing options, source and target paths
+ * @param {string}      file              The filename to load
+ * @param {object}      options           The processing options, source and target paths
+ * @param {function[]}  tasks             An array of task functions
  */
-function processFile (file, options) {
+function processFile (file, options, tasks) {
   // paths
   const srcFile = Path.join(options.source, file)
   const trgFile = Path.join(options.target, file)
@@ -24,14 +45,9 @@ function processFile (file, options) {
 
   // process
   if (input) {
-    // the queue of tasks to run
-    const tasks = [outline, unsize]
-
     // a log object, which will be passed to each task by-reference
     const log = {
       state: 'skipped',
-      paths: 0,
-      unsize: false,
     }
 
     // run the tasks
@@ -52,7 +68,7 @@ function processFile (file, options) {
       log.state = 'copied'
     }
 
-    // log output
+    // return info for logging
     return { file, log }
   }
 }
@@ -61,16 +77,18 @@ function processFile (file, options) {
 /**
  * Process a list of files
  *
- * @param {string[]}  files               An array of folder paths (relative or absolute)
- * @param {object}    options             Options to pass to the script
+ * @param {string[]}    files             An array of folder paths (relative or absolute)
+ * @param {object}      options           Options to pass to the script
+ * @param {function[]}  tasks             An array of task functions
  */
-function processFiles (files, options) {
+function processFiles (files, options, tasks) {
   // results
-  const results = files.map(file => processFile(file, options))
+  const results = files.map(file => processFile(file, options, tasks))
 
   // table
+  const headers = Object.keys(results[0].log)
   const table = new Table({
-    head: [`Files (${files.length})`, 'State', 'Paths', 'Unsized'],
+    head: [`files (${files.length})`, ...headers],
     style: { compact: true, 'padding-left': 1 },
   })
 
@@ -81,12 +99,11 @@ function processFiles (files, options) {
 
     // cells
     const filename = file.replace('/', '').replace('.svg', '')
-    const state = colorize(log.state)
-    const paths = colorize(log.paths)
-    const unsize = colorize(log.unsize)
+    const cells = headers.map(name => log[name]).map(value => colorize(value))
 
     // row
-    table.push([filename, state, paths, unsize])
+    table.push([filename, ...cells])
+
   })
 
   // output
@@ -107,6 +124,9 @@ function watchFolder (options) {
   let timeout = 250
   let files = []
 
+  // get tasks
+  const tasks = getTasks(options)
+
   // callback
   const onChange = filepath => {
     // add changed file
@@ -117,7 +137,7 @@ function watchFolder (options) {
 
     // delay processing
     timeoutId = setTimeout(() => {
-      processFiles(files, options)
+      processFiles(files, options, tasks)
       files = []
     }, timeout)
   }

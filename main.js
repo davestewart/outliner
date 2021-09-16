@@ -4,19 +4,29 @@ require('colors')
 const { watchFolder } = require('./src/watch.js')
 
 // options
-const options = require('yargs/yargs')(process.argv.slice(2)).argv
+const args = require('yargs/yargs')(process.argv.slice(2)).argv
 
 // source and target folders
-let [source, target] = options._
+let [source, target] = args._
 if (!target) {
   target = source
+}
+
+// build options
+const options = {
+  source,
+  target,
+  tasks: {
+    outline: true,
+    unsize: args.unsize,
+  }
 }
 
 // if we have source and target, begin
 if (source && target) {
   // convert all paths to absolute
-  options.source = Path.resolve(__dirname, source)
-  options.target = Path.resolve(__dirname, target)
+  options.source = Path.resolve(__dirname, options.source)
+  options.target = Path.resolve(__dirname, options.target)
 
   // make sure source folder exists
   if (!Fs.existsSync(options.source)) {
