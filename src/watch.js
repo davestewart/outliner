@@ -70,18 +70,34 @@ function processFile (filename, options) {
  * @param [options.nosize]    an optional flag to remove width and height attributes from the SVG
  */
 function watchFolder (options) {
+  // variables
+  let timeoutId = 0
+  let timeout = 250
+  let files = []
+
+  // process files
+  const processFiles = function () {
+    console.log(`\nProcessing files: ${files.length}\n`)
+    files.forEach(file => {
+      processFile(file, options)
+    })
+    files = []
+  }
+
   // callback
   const onChange = filepath => {
-    const filename = filepath.replace(options.source, '')
-    processFile(filename, options)
+    // add changed file
+    files.push(filepath.replace(options.source, ''))
+
+    // delay processing
+    clearTimeout(timeoutId)
+    timeoutId = setTimeout(processFiles, timeout)
   }
 
   // watch
   const glob = Path.join(options.source, '*.svg')
   chokidar
-    .watch(glob, {
-      persistent: true,
-    })
+    .watch(glob, { persistent: true })
     .on('add', onChange)
     .on('change', onChange)
 }
