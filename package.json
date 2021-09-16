@@ -1,12 +1,15 @@
 {
-  "name": "svg-outliner",
+  "name": "outliner",
   "version": "1.0.0",
-  "description": "A node script to post-process the outlining of SVG paths",
-  "main": "main.js",
+  "description": "A node package to outline SVG files",
+  "main": "index.js",
+  "bin": {
+    "outliner": "./bin/index.js"
+  },
   "scripts": {
-    "watch": "node main.js",
-    "dev": "nodemon main.js demo/source demo/target --unsize",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "watch": "node main.js --",
+    "demo": "nodemon main.js demo/source demo/target",
+    "test": "node tests/index.js"
   },
   "author": "Dave Stewart",
   "license": "ISC",
