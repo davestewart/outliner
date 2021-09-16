@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Something isn't working as it should
 title: ''
 labels: bug
 assignees: ''
@@ -25,11 +25,11 @@ A clear and concise description of what you expected to happen.
 ## Additional info
 
 Environment:
- - OS: [Mac, Windows, UNix]
+ - OS: [Mac, Windows, Unix]
  - Node version [node -v]
 
-Add any other context about the problem here
+Add any other context about the problem here.
 
 If applicable, add screenshots to help explain your problem.
 
-You can delete this section if not relevant
+_You can delete this section if not relevant._
