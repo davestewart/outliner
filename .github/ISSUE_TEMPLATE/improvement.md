@@ -1,6 +1,6 @@
 ---
 name: Improvement
-about: Propose an improvement
+about: Propose an improvement to an existing feature
 title: ''
 labels: ''
 assignees: ''
