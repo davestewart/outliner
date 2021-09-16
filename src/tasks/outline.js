@@ -41,20 +41,20 @@ function processPath (pathData, width, cap = 'miter') {
 /**
  * Process SVG and convert paths to fills
  *
- * @param   {string}  input
+ * @param   {string}  svg
  * @param   {object}  log
  * @return  {string}
  */
-function processSvg (input, log) {
+function processSvg (svg, log) {
   // load file
   const options = { xml: { normalizeWhitespace: true } }
-  const $ = cheerio.load(input, options)
+  const $ = cheerio.load(svg, options)
 
   // paths
   const paths = $('path[stroke-width]')
 
   // logs
-  log.outline = paths.length
+  log.paths = paths.length
 
   // process
   if (paths.length) {
@@ -95,7 +95,7 @@ function processSvg (input, log) {
   }
 
   // return unchanged
-  return input
+  return svg
 }
 
 module.exports = processSvg
