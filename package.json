@@ -7,8 +7,8 @@
     "outliner": "./bin/index.js"
   },
   "scripts": {
-    "watch": "node main.js --",
-    "demo": "nodemon main.js demo/source demo/target",
+    "demo": "node main.js demo/source demo/target --autosize",
+    "dev": "nodemon main.js demo/source demo/target --autosize",
     "test": "node tests/index.js"
   },
   "author": "Dave Stewart",

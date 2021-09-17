@@ -5,14 +5,14 @@
  * @param   {object}  log
  * @return  {string}
  */
-function unsize (input, log) {
-  log.unsize = false
+function autosize (input, log) {
+  log.autosize = false
   return input.replace(/<svg.+?>/, match => {
     return match.replace(/ \b(width|height)="\d+"/g, match => {
-      log.unsize = true
+      log.autosize = true
       return ''
     })
   })
 }
 
-module.exports = unsize
+module.exports = autosize
