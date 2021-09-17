@@ -4,13 +4,20 @@
 
 ## Intro
 
-Outliner is a Node package that converts SVG strokes to outlined fills:
+Outliner is a Node package that converts SVG strokes to outlined fills as a *post-export* process:
 
 ![process](https://raw.githubusercontent.com/davestewart/outliner/master/assets/artwork/process.png)
 
-Converting strokes to fills *after* exporting from packages such as  [Figma](https://twitter.com/figmadesign) or [Sketch](https://twitter.com/sketch) lets you retain the flexibility of useful features such as corner radii within the authoring application.
+There are several reasons why retaining strokes within software such as [Figma](https://twitter.com/figmadesign) or [Sketch](https://twitter.com/sketch) is preferable:
 
-This is ideal for icon creators; no more locking in those curves and losing your vector tweaks!
+- strokes allow you to adjust widths and corner radii on the fly
+- outlined objects cannot be changed once outlined
+- union operators close open paths (Sketch) or create heavy exports (Figma)
+
+This tool is designed for:
+
+- icon creators; no more locking in those curves and losing your vector tweaks!
+- developers; work with clean SVG conversions and manipulate attributes in code
 
 ## Getting started
 
@@ -56,15 +63,26 @@ Outliner will immediately run and start converting files:
 │ icon-folder-bookmark │ updated │ 2     │ true     │
 │ icon-folder          │ updated │ 1     │ true     │
 │ icon-remove-window   │ updated │ 2     │ true     │
-│ logo-bad             │ updated │ 0     │ true     │
-│ logo-good            │ updated │ 1     │ true     │
-│ star-bevel           │ updated │ 1     │ true     │
-│ star-mitre           │ updated │ 1     │ true     │
-│ star-rounded         │ updated │ 1     │ true     │
+│ joints/star-bevel    │ skipped │ 1     │ true     │
+│ joints/star-mitre    │ skipped │ 1     │ true     │
+│ joints/star-rounded  │ skipped │ 1     │ true     │
+│ fills/logo-bad       │ copied  │ 0     │ true     │
+│ fills/logo-good      │ copied  │ 1     │ true     │
 └──────────────────────┴─────────┴───────┴──────────┘
 ```
 
 The service will continue to watch the folder, and any further exports will be detected and converted automatically.
+
+The available states are:
+
+```
+no file       -> the source file did not exist
+no input      -> the source file contained no data
+no write      -> no target file was written, only the output returned
+skipped       -> the new output was the same as the old, so was skipped
+updated       -> the new output was different from the old, so the target was updated
+copied        -> the source file did not exist in the target folder, so was copied
+```
 
 Note:
 
@@ -95,7 +113,7 @@ Then, add an entry to your project's `package.json` scripts, e.g.:
 ```json
 {
   "scripts": {
-    "outline-icons": "node outliner <source> <target> --watch --unsize"
+    "outline-icons": "node outliner <source> <target> --unsize"
   }
 }
 ```
@@ -174,7 +192,7 @@ Note that the `tasks` array also accepts custom functions:
 ```js
 function replaceColor (svg, log) {
   log.replaceColor = true
-  return svg.replace(/#000000/g, '#FF0000')
+  return svg.replace(/#000000/g, 'currentColor')
 }
 outlineSvg(svg, ['outline', replaceColor], log)
 ```
@@ -190,14 +208,18 @@ Check the `tests/index.js` file for working code.
 Signature:
 
 ```ts
-outlineFile(srcPath: string, trgPath?: string, tasks?: string[], log?: object)
+outlineFile(src: string, trg?: string | false | null, tasks?: Array<string | Function>, log?: object)
 ```
 
 Parameters:
 
-- `srcPath`: a relative or absolute path to a source folder
-- `trgPath`: an optional relative or absolute path to a target folder
-- `tasks`: an array of task names to run; defaults to `['outline', 'autosize']`
+- `src`: a relative or absolute path to a source folder
+- `trg`: an optional relative or absolute path to a target folder
+  - pass `undefined` to use the same `src` 
+  - Pass `false` or `null` to skip writing and just return the output 
+- `tasks`: an array of tasks to run, defaults to `['outline', 'autosize']`
+  - string tasks should be one of `'outline'` or`'autosize'`
+  - functions should be of the format `(svg: string, log: object) => {}: string`  
 - `log`: an optional `{}` object to receive logging information
 
 #### Outline SVG
@@ -207,13 +229,15 @@ Parameters:
 Signature:
 
 ```js
-outlineSvg(svg: string, tasks?: string[], log?: object)
+outlineSvg(svg: string, tasks?: Array<string | Function>, log?: object)
 ```
 
 Parameters:
 
 - `svg`: valid SVG text
-- `tasks`: an array of task names  to run; defaults to `['outline', 'autosize']`
+- `tasks`: an array of tasks to run, defaults to `['outline', 'autosize']`
+  - string tasks should be one of `'outline'` or`'autosize'`
+  - functions should be of the format `(svg: string, log: object) => {}: string` 
 - `log`: an optional `{}` object to receive logging information
 
 ## Demos
