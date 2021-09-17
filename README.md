@@ -52,43 +52,7 @@ Note:
 
 - paths can be relative or absolute
 - if you omit `target`, your `source` files will overwritten in place
-
-Outliner will immediately run and start converting files:
-
-```
-┌──────────────────────┬─────────┬───────┬──────────┐
-│ files (9)            │ state   │ paths │ autosize │
-├──────────────────────┼─────────┼───────┼──────────┤
-│ icon-file-import     │ updated │ 2     │ true     │
-│ icon-folder-bookmark │ updated │ 2     │ true     │
-│ icon-folder          │ updated │ 1     │ true     │
-│ icon-remove-window   │ updated │ 2     │ true     │
-│ joints/star-bevel    │ skipped │ 1     │ true     │
-│ joints/star-mitre    │ skipped │ 1     │ true     │
-│ joints/star-rounded  │ skipped │ 1     │ true     │
-│ fills/logo-bad       │ copied  │ 0     │ true     │
-│ fills/logo-good      │ copied  │ 1     │ true     │
-└──────────────────────┴─────────┴───────┴──────────┘
-```
-
-The service will continue to watch the folder, and any further exports will be detected and converted automatically.
-
-The available states are:
-
-```
-no file       -> the source file did not exist
-no input      -> the source file contained no data
-no write      -> no target file was written, only the output returned
-skipped       -> the new output was the same as the old, so was skipped
-updated       -> the new output was different from the old, so the target was updated
-copied        -> the source file did not exist in the target folder, so was copied
-```
-
-Note:
-
-- to stop the service, press `Ctrl+C`
-- files *without* stroked paths are skipped, or copied to `target` without changes 
-- to optionally remove `width` and `height` information (so they resize nicely) pass the `--autosize` flag:
+- To remove `width` and `height` information (so they resize nicely) pass the `--autosize` flag:
 
 ```
 node outliner <source> <target> --autosize
@@ -108,7 +72,7 @@ This time, install Outliner *locally*:
 npm install @davestewart/outliner --save-dev
 ```
 
-Then, add an entry to your project's `package.json` scripts, e.g.:
+Then, add a script entry to your project's `package.json`, e.g.:
 
 ```json
 {
@@ -118,13 +82,51 @@ Then, add an entry to your project's `package.json` scripts, e.g.:
 }
 ```
 
-You can then run the script like so:
+You can then run the Outliner service like so:
 
 ```bash
 npm run outline-icons
 ```
 
-Outliner will start and watch the folder you specify in `<source>` and `<target>`.
+Outliner will start and watch the folder you specify in `<source>` and output to `<target>`.
+
+### Logging
+
+Once the service is running, Outliner will start converting files and logging results:
+
+```
+┌──────────────────────┬─────────┬───────┬──────────┐
+│ files (9)            │ state   │ paths │ autosize │
+├──────────────────────┼─────────┼───────┼──────────┤
+│ icon-file-import     │ updated │ 2     │ true     │
+│ icon-folder-bookmark │ updated │ 2     │ true     │
+│ icon-folder          │ updated │ 1     │ true     │
+│ icon-remove-window   │ updated │ 2     │ true     │
+│ joints/star-bevel    │ skipped │ 1     │ true     │
+│ joints/star-mitre    │ skipped │ 1     │ true     │
+│ joints/star-rounded  │ skipped │ 1     │ true     │
+│ fills/logo-bad       │ copied  │ 0     │ true     │
+│ fills/logo-good      │ copied  │ 1     │ true     │
+└──────────────────────┴─────────┴───────┴──────────┘
+```
+
+The service will continue to watch the `source` folder, and any further exports will be detected, converted and logged automatically.
+
+The available states are:
+
+```
+no file       -> the source file did not exist
+no input      -> the source file contained no data
+no write      -> no target file was written, only the output returned
+skipped       -> the new output was the same as the old, so was skipped
+updated       -> the new output was different from the old, so the target was updated
+copied        -> the source file did not exist in the target folder, so was copied
+```
+
+Note:
+
+- files *without* stroked paths are skipped, or copied to `target` without changes
+- to stop the service, press `Ctrl+C`
 
 ## Running as a dependency
 
@@ -154,6 +156,9 @@ outlineFile('./assets/src/star.svg', './assets/trg/star.svg')
 
 // convert a file and save in place
 outlineFile('./assets/src/star.svg')
+
+// get the converted output but don't save
+const output = outlineFile('./assets/src/star.svg', false)
 
 // convert existing SVG text
 const output = outlineSvg(input)
@@ -187,7 +192,7 @@ The log object will be populated by each of the tasks that ran:
 }
 ```
 
-Note that the `tasks` array also accepts custom functions:
+Note that you can also pass custom functions as `tasks`:
 
 ```js
 function replaceColor (svg, log) {
