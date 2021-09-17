@@ -8,7 +8,7 @@ Outliner is a Node package that converts SVG strokes to outlined fills:
 
 ![process](https://raw.githubusercontent.com/davestewart/outliner/master/assets/artwork/process.png)
 
-Converting strokes to fills *after* exporting from packages such as  [@Figma](https://twitter.com/figma) or  [@Sketch](https://twitter.com/sketch) lets you retain the flexibility of useful features such as corner radii within the authoring packaging.
+Converting strokes to fills *after* exporting from packages such as  [Figma](https://twitter.com/figmadesign) or [Sketch](https://twitter.com/sketch) lets you retain the flexibility of useful features such as corner radii within the authoring application.
 
 This is ideal for icon creators; no more locking in those curves and losing your vector tweaks!
 
