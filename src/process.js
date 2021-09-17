@@ -2,6 +2,18 @@ const Fs = require('fs')
 const Path = require('path')
 
 /**
+ * Ensure target folder exists
+ *
+ * @param   {string}      path            A file path
+ */
+function ensureDirectory (path) {
+  const folder = Path.dirname(path)
+  if (!Fs.existsSync(folder)) {
+    Fs.mkdirSync(folder, { recursive: true })
+  }
+}
+
+/**
  * Process SVG text
  *
  * @param   {string}      input           The SVG content
@@ -48,28 +60,31 @@ function processFile (srcFile, trgFile, tasks, log = {}) {
     // if the SVG was updated, write the file
     if (output !== input) {
       log.state = 'updated'
-      if (trgFile) {
-        Fs.writeFileSync(trgFile, output)
-      }
     }
 
-    // if no change and new folder, copy the file
+    // if no change, but target folder, copy the file
     else if (trgFile !== srcFile) {
       log.state = 'copied'
-      if (trgFile) {
-        Fs.copyFileSync(srcFile, trgFile)
-      }
     }
 
+    // otherwise, skip
     else {
       log.state = 'skipped'
+      return output
     }
   }
 
   // no input
   else {
     log.state = 'no input'
+    return output
   }
+
+  // if we get here, write to disk
+  ensureDirectory(trgFile)
+  log.state === 'updated'
+    ? Fs.writeFileSync(trgFile, output)
+    : Fs.copyFileSync(srcFile, trgFile)
 
   // return svg
   return output
