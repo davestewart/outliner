@@ -1,17 +1,5 @@
-const Fs = require('fs')
-const Path = require('path')
-
-/**
- * Ensure target folder exists
- *
- * @param   {string}      path            A file path
- */
-function ensureDirectory (path) {
-  const folder = Path.dirname(path)
-  if (!Fs.existsSync(folder)) {
-    Fs.mkdirSync(folder, { recursive: true })
-  }
-}
+Path = require('path')
+const { readFile, writeFile, copyFile } = require('./utils/file.js')
 
 /**
  * Process SVG text
@@ -31,24 +19,25 @@ function processSvg (input, tasks, log = {}) {
 /**
  * Process a single SVG file
  *
- * @param   {string}      srcFile         The source file path
- * @param   {string}      trgFile         The target file path
+ * @param   {string}      src             The source file path
+ * @param   {string|null|undefined} trg   The target file path (pass undefined to use src, false or null to skip file write)
  * @param   {function[]}  tasks           An array of task functions
  * @param   {object}      [log]           An optional hash to log updates to
  * @returns {string}                      The processed SVG
  */
-function processFile (srcFile, trgFile, tasks, log = {}) {
-  // variables
-  let input = ''
-  let output = ''
-
-  // svg
-  try {
-    input = Fs.readFileSync(srcFile).toString()
-    output = input
+function processFile (src, trg, tasks, log = {}) {
+  // parameters
+  if (trg === undefined) {
+    trg = src
   }
-  catch (err) {
-    log.state = 'no such file'
+
+  // variables
+  let input = readFile(src)
+  let output = input
+
+  // no file
+  if (input === undefined) {
+    log.state = 'no file'
     return ''
   }
 
@@ -63,7 +52,7 @@ function processFile (srcFile, trgFile, tasks, log = {}) {
     }
 
     // if no change, but target folder, copy the file
-    else if (trgFile !== srcFile) {
+    else if (trg !== src) {
       log.state = 'copied'
     }
 
@@ -77,14 +66,26 @@ function processFile (srcFile, trgFile, tasks, log = {}) {
   // no input
   else {
     log.state = 'no input'
+    return output || ''
+  }
+
+  // if trg is false, skip
+  if (trg === false || trg === null) {
+    log.state = 'no write'
+    return output
+  }
+
+  // check to see if new output is different from old output
+  const oldOutput = readFile(trg)
+  if (output === oldOutput) {
+    log.state = 'skipped'
     return output
   }
 
   // if we get here, write to disk
-  ensureDirectory(trgFile)
   log.state === 'updated'
-    ? Fs.writeFileSync(trgFile, output)
-    : Fs.copyFileSync(srcFile, trgFile)
+    ? writeFile(trg, output)
+    : copyFile(src, trg)
 
   // return svg
   return output
@@ -101,7 +102,7 @@ function processFiles (files, options, tasks) {
   return files.map(file => {
     // paths
     const srcFile = Path.join(options.source, file)
-    const trgFile = Path.join(options.target, file)
+    const trgFile = Path.join(options.target || options.source, file)
 
     // a log object, which will be passed to each task by-reference
     const log = {
