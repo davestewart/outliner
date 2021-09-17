@@ -113,7 +113,7 @@ Then, add an entry to your project's `package.json` scripts, e.g.:
 ```json
 {
   "scripts": {
-    "outline-icons": "node outliner <source> <target> --unsize"
+    "outline-icons": "node outliner <source> <target> --autosize"
   }
 }
 ```
