@@ -45,7 +45,7 @@ If you want to run Outliner from anywhere on your machine, install **globally** 
 
 ## Running as a service
 
-###As a global service
+### As a global service
 
 > Best for designers working alone
 
