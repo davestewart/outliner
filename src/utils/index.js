@@ -12,7 +12,7 @@ function colorize (value) {
   else if (value === 'updated') {
     return text.brightCyan
   }
-  else if (value === 'error' || value === 'no such file') {
+  else if (value === 'error' || value === 'no file') {
     return text.red
   }
   else if (typeof value === 'number' || value === true) {
