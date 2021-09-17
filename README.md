@@ -1,7 +1,5 @@
 # Outliner
 
-> A node package to outline SVG strokes as fills
-
 ![outliner logo](https://raw.githubusercontent.com/davestewart/outliner/master/assets/artwork/outliner-logo.png)
 
 ## Intro
@@ -18,28 +16,10 @@ This is ideal for icon creators; no more locking in those curves and losing your
 
 To use Outliner, you will need [Node](https://nodejs.org/en/) and NPM installed.
 
-### Installation
-
-Outliner can be installed globally (as a command line service) or locally (as a package dependency).
-
-```bash
-# globally
-npm install @davestewart/outliner --global
-```
-
-```bash
-# locally
-npm install @davestewart/outliner --save-dev
-```
-
-### Usage
-
-There are two ways to use Outliner:
+Once installed, there are two ways to use Outliner:
 
 - as a **[service](#running-as-a-service)**, where you watch a source folder and convert files as you export them
 - as a **[dependency](#running-as-a-dependency)**, where you use the conversion functions Outliner exposes in your own project
-
-### For non-technical folk...
 
 If you want to run Outliner from anywhere on your machine, install **globally** and run as a **service**.
 
@@ -49,9 +29,13 @@ If you want to run Outliner from anywhere on your machine, install **globally** 
 
 > Best for designers working alone
 
-Once you've installed Outliner globally, it will run from anywhere on your machine.
+Open a terminal prompt and install the package globally:
 
-All you need to do after, is open a terminal prompt and call the `outliner` service passing a `source` folder path, and optional `target` folder path:
+```bash
+npm install @davestewart/outliner --global
+```
+
+To start converting, call the `outliner` service passing `source` and (optional) `target` paths:
 
 ```
 node outliner <source> <target>
@@ -96,11 +80,17 @@ node outliner <source> <target> --autosize
 
 > Best for designers working in teams
 
-You can also run Outliner as a service *within* a JavaScript project.
+You can also run Outliner as a service **within** a JavaScript project.
 
-This makes it simple for anyone who is working with the project source to update assets.
+This makes it simple for *anyone* who is working with the project source to update assets.
 
-Install Outliner locally, then add an entry to your project's `package.json` scripts:
+This time, install Outliner *locally*:
+
+```bash
+npm install @davestewart/outliner --save-dev
+```
+
+Then, add an entry to your project's `package.json` scripts, e.g.:
 
 ```json
 {
@@ -123,6 +113,12 @@ Outliner will start and watch the folder you specify in `<source>` and `<target>
 > Best for developers who need to manipulate SVGs
 
 Outliner is a typical dependency that you install and use like any other package.
+
+Install as usual:
+
+```bash
+npm i @davestewart/outliner --save-dev
+```
 
 There are two functions exposed:
 
@@ -173,6 +169,16 @@ The log object will be populated by each of the tasks that ran:
 }
 ```
 
+Note that the `tasks` array also accepts custom functions:
+
+```js
+function replaceColor (svg, log) {
+  log.replaceColor = true
+  return svg.replace(/#000000/g, '#FF0000')
+}
+outlineSvg(svg, ['outline', replaceColor], log)
+```
+
 Check the `tests/index.js` file for working code.
 
 ## API
@@ -191,8 +197,8 @@ Parameters:
 
 - `srcPath`: a relative or absolute path to a source folder
 - `trgPath`: an optional relative or absolute path to a target folder
-- `tasks`: a string of tasks to run; defaults to `['outline', 'autosize']`
-- `log`: an optional object to receive logging information
+- `tasks`: an array of task names to run; defaults to `['outline', 'autosize']`
+- `log`: an optional `{}` object to receive logging information
 
 #### Outline SVG
 
@@ -207,8 +213,8 @@ outlineSvg(svg: string, tasks?: string[], log?: object)
 Parameters:
 
 - `svg`: valid SVG text
-- `tasks`: a string of tasks to run; defaults to `['outline', 'autosize']`
-- `log`: an optional `{}` object` to receive logging information
+- `tasks`: an array of task names  to run; defaults to `['outline', 'autosize']`
+- `log`: an optional `{}` object to receive logging information
 
 ## Demos
 
