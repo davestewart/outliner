@@ -1,7 +1,7 @@
 {
-  "name": "outliner",
+  "name": "@davestewart/outliner",
   "version": "1.0.0",
-  "description": "A node package to outline SVG files",
+  "description": "A node package to outline SVG strokes as fills",
   "main": "index.js",
   "bin": {
     "outliner": "./bin/index.js"
@@ -9,8 +9,17 @@
   "scripts": {
     "demo": "node main.js demo/source demo/target --autosize",
     "dev": "nodemon main.js demo/source demo/target --autosize",
-    "test": "node tests/index.js"
+    "test": "node tests/index.js",
+    "publish": "npm publish --access public"
   },
+  "files": [
+    "bin/*",
+    "src/*",
+    "tests/*",
+    "index.js",
+    "main.js",
+    "README.md"
+  ],
   "author": "Dave Stewart",
   "license": "ISC",
   "dependencies": {
