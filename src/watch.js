@@ -3,9 +3,9 @@ const Fs = require('fs')
 const Path = require('path')
 const Table = require('cli-table3')
 const chokidar = require('chokidar')
+const { colorize, log } = require('./utils')
 const { processFiles } = require('./process')
 const { getTasks } = require('./tasks')
-const { colorize, log } = require('./utils')
 
 const cwd = process.cwd()
 
@@ -38,9 +38,6 @@ function makeOptions (source, target, flags = {}) {
       log(`Source folder "${Path.relative(cwd, options.source)}" does not exist`)
       return
     }
-
-    // make sure target folder exists
-    Fs.mkdirSync(target, { recursive: true })
 
     // debug
     log(JSON.stringify(options, null, '  '), 'options')
@@ -135,7 +132,7 @@ function watchFolder (options) {
   }
 
   // watch
-  const glob = Path.join(options.source, '*.svg')
+  const glob = Path.join(options.source, '**/*.svg')
   chokidar
     .watch(glob, { persistent: true })
     .on('add', onChange)
