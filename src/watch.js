@@ -14,8 +14,8 @@ const cwd = process.cwd()
  *
  * @param   {string}  source    A relative or absolute source folder path
  * @param   {string}  target    A relative or absolute target folder path
- * @param   {string}  flags     A hash of task names
- * @return  {{source, target, tasks: {unsize: (boolean|*), outline: boolean}}|void}
+ * @param   {object}  flags     A hash of task names
+ * @return  {{source, target, tasks}|void}
  */
 function makeOptions (source, target, flags = {}) {
   const options = {
@@ -23,7 +23,7 @@ function makeOptions (source, target, flags = {}) {
     target,
     tasks: {
       outline: true,
-      unsize: flags.unsize,
+      autosize: flags.autosize,
     },
   }
 

@@ -42,7 +42,7 @@ function getTasks (tasks) {
   }, [])
 }
 
-const DEFAULT_TASKS = ['outline', 'unsize']
+const DEFAULT_TASKS = ['outline', 'autosize']
 
 module.exports = {
   DEFAULT_TASKS,
