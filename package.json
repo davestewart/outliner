@@ -1,6 +1,6 @@
 {
   "name": "@davestewart/outliner",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A node package to outline SVG strokes as fills",
   "main": "src/index.js",
   "bin": {

@@ -51,7 +51,7 @@ function processSvg (svg, log) {
   const $ = cheerio.load(svg, options)
 
   // paths
-  const paths = $('path[stroke-width]')
+  const paths = $('path[stroke]')
 
   // logs
   log.paths = paths.length
@@ -65,7 +65,7 @@ function processSvg (svg, log) {
 
       // variables
       const fillRule = $e.attr('fill-rule')
-      const width = $e.attr('stroke-width')
+      const width = $e.attr('stroke-width') || 1
       const join = $e.attr('stroke-linejoin')
       const fill = $e.attr('stroke')
       const d = $e.attr('d')
