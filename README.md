@@ -94,7 +94,7 @@ Outliner will start and watch the folder you specify in `<source>` and output to
 
 Once the service is running, Outliner will start converting files and logging results:
 
-![logging](./assets/artwork/cli.png)
+![logging](https://raw.githubusercontent.com/davestewart/outliner/master/assets/artwork/cli.png)
 
 The service will continue to watch the `source` folder, and any further exports will be detected, converted and logged automatically.
 
