@@ -95,19 +95,19 @@ Outliner will start and watch the folder you specify in `<source>` and output to
 Once the service is running, Outliner will start converting files and logging results:
 
 ```
-┌──────────────────────┬─────────┬───────┬──────────┐
-│ files (9)            │ state   │ paths │ autosize │
-├──────────────────────┼─────────┼───────┼──────────┤
-│ icon-file-import     │ updated │ 2     │ true     │
-│ icon-folder-bookmark │ updated │ 2     │ true     │
-│ icon-folder          │ updated │ 1     │ true     │
-│ icon-remove-window   │ updated │ 2     │ true     │
-│ joints/star-bevel    │ skipped │ 1     │ true     │
-│ joints/star-mitre    │ skipped │ 1     │ true     │
-│ joints/star-rounded  │ skipped │ 1     │ true     │
-│ fills/logo-bad       │ copied  │ 0     │ true     │
-│ fills/logo-good      │ copied  │ 1     │ true     │
-└──────────────────────┴─────────┴───────┴──────────┘
+┌──────────────────────┬───────────┬───────┬──────────┐
+│ files (9)            │ state     │ paths │ autosize │
+├──────────────────────┼───────────┼───────┼──────────┤
+│ icon-file-import     │ updated   │ 2     │ true     │
+│ icon-folder-bookmark │ updated   │ 2     │ true     │
+│ icon-folder          │ updated   │ 1     │ true     │
+│ icon-remove-window   │ updated   │ 2     │ true     │
+│ joints/star-bevel    │ no change │ 1     │ true     │
+│ joints/star-mitre    │ no change │ 1     │ true     │
+│ joints/star-rounded  │ no change │ 1     │ true     │
+│ fills/logo-bad       │ copied    │ 0     │ true     │
+│ fills/logo-good      │ copied    │ 1     │ true     │
+└──────────────────────┴───────────┴───────┴──────────┘
 ```
 
 The service will continue to watch the `source` folder, and any further exports will be detected, converted and logged automatically.
@@ -118,7 +118,7 @@ The available states are:
 no file       -> the source file did not exist
 no input      -> the source file contained no data
 no write      -> no target file was written, only the output returned
-skipped       -> the new output was the same as the old, so was skipped
+no change     -> no change between output and target, so no file are updated
 updated       -> the new output was different from the old, so the target was updated
 copied        -> the source file did not exist in the target folder, so was copied
 ```
@@ -188,7 +188,8 @@ The log object will be populated by each of the tasks that ran:
 ```
 {
   paths: 1,
-  autosize: true
+  autosize: true,
+  state: 'updated'
 }
 ```
 
@@ -199,6 +200,7 @@ function replaceColor (svg, log) {
   log.replaceColor = true
   return svg.replace(/#000000/g, 'currentColor')
 }
+
 outlineSvg(svg, ['outline', replaceColor], log)
 ```
 
@@ -244,6 +246,21 @@ Parameters:
   - string tasks should be one of `'outline'` or`'autosize'`
   - functions should be of the format `(svg: string, log: object) => {}: string` 
 - `log`: an optional `{}` object to receive logging information
+
+#### State
+
+> An object of constants to compare against
+
+The `log.state` for each file operation will contain one of these values:
+
+```js
+State.NO_FILE   = 'no file' 
+State.NO_DATA   = 'no data' 
+State.NO_WRITE  = 'no write' 
+State.NO_CHANGE = 'no change' 
+State.UPDATED   = 'updated' 
+State.COPIED    = 'copied'
+```
 
 ## Demos
 

@@ -1,4 +1,5 @@
 require('colors')
+const { State } = require('../process')
 
 function isPlainObject (value) {
   return value && typeof value === 'object' && !Array.isArray(value)
@@ -6,13 +7,13 @@ function isPlainObject (value) {
 
 function colorize (value) {
   const text = String(value)
-  if (value === 'skipped' || value === false || value === 0) {
+  if (value === State.NO_CHANGE || value === false || value === 0) {
     return text.grey
   }
-  else if (value === 'updated') {
+  else if (value === State.UPDATED) {
     return text.brightCyan
   }
-  else if (value === 'error' || value === 'no file') {
+  else if (value === State.NO_FILE || value === State.NO_DATA || value === 'error') {
     return text.red
   }
   else if (typeof value === 'number' || value === true) {

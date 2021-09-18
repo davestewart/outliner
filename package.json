@@ -7,7 +7,7 @@
     "outliner": "./bin/index.js"
   },
   "scripts": {
-    "demo": "node main.js demo/source demo/target --autosize",
+    "demo": "node main.js demo/source demo/target",
     "dev": "nodemon main.js demo/source demo/target --autosize",
     "test": "node tests/index.js",
     "publish": "npm publish --access public"
