@@ -94,39 +94,22 @@ Outliner will start and watch the folder you specify in `<source>` and output to
 
 Once the service is running, Outliner will start converting files and logging results:
 
-```
-┌──────────────────────┬───────────┬───────┬──────────┐
-│ files (9)            │ state     │ paths │ autosize │
-├──────────────────────┼───────────┼───────┼──────────┤
-│ icon-file-import     │ updated   │ 2     │ true     │
-│ icon-folder-bookmark │ updated   │ 2     │ true     │
-│ icon-folder          │ updated   │ 1     │ true     │
-│ icon-remove-window   │ updated   │ 2     │ true     │
-│ joints/star-bevel    │ no change │ 1     │ true     │
-│ joints/star-mitre    │ no change │ 1     │ true     │
-│ joints/star-rounded  │ no change │ 1     │ true     │
-│ fills/logo-bad       │ copied    │ 0     │ true     │
-│ fills/logo-good      │ copied    │ 1     │ true     │
-└──────────────────────┴───────────┴───────┴──────────┘
-```
+![logging](./assets/artwork/cli.png)
 
 The service will continue to watch the `source` folder, and any further exports will be detected, converted and logged automatically.
 
-The available states are:
+A good terminal should render the paths as clickable links, making it easy to open the updated files.
 
-```
-no file       -> the source file did not exist
-no input      -> the source file contained no data
-no write      -> no target file was written, only the output returned
-no change     -> no change between output and target, so no file are updated
-updated       -> the new output was different from the old, so the target was updated
-copied        -> the source file did not exist in the target folder, so was copied
-```
+For reference, the log states are:
 
-Note:
-
-- files *without* stroked paths are skipped, or copied to `target` without changes
-- to stop the service, press `Ctrl+C`
+| State     | Description                                                  |
+| --------- | ------------------------------------------------------------ |
+| no file   | the source file did not exist                                |
+| no data   | the source file contained no data                            |
+| no write  | no target file was written, only the output returned (API only) |
+| no change | no change between output and target, so the target was not updated |
+| updated   | the new output was different from the old, so the target was updated |
+| copied    | the source file did not exist in the target folder, so was copied |
 
 ## Running as a dependency
 

@@ -8,7 +8,10 @@
   },
   "scripts": {
     "demo": "node main.js demo/source demo/target",
-    "dev": "nodemon main.js demo/source demo/target --autosize",
+    "dev": "nodemon main.js demo/source demo/target",
+    "dev:autosize": "nodemon main.js demo/source demo/target --autosize",
+    "dev:source": "nodemon main.js demo/source",
+    "dev:absolute": "nodemon main.js /Users/Dave/Desktop/svgs/src /Users/Dave/Desktop/svgs/trg",
     "test": "node tests/index.js",
     "publish": "npm publish --access public"
   },
