@@ -5,14 +5,10 @@ const { watchFolder, makeOptions } = require('./src/watch')
 const args = require('yargs/yargs')(process.argv.slice(2)).argv
 
 // source and target folders
-let [source, target] = args._
-if (!target) {
-  target = source
-}
+const [source, target] = args._
 
 // run
 const options = makeOptions(source, target, args)
-
 if (options) {
   watchFolder(options)
 }
