@@ -1,6 +1,9 @@
 Path = require('path')
 const { readFile, writeFile, copyFile } = require('./utils/file.js')
 
+/**
+ * State constants
+ */
 const State = Object.freeze({
   NO_FILE: 'no file',
   NO_DATA: 'no data',
@@ -111,7 +114,9 @@ function processFiles (files, options, tasks) {
   return files.map(file => {
     // paths
     const srcFile = Path.join(options.source, file)
-    const trgFile = Path.join(options.target || options.source, file)
+    const trgFile = options.target
+      ? Path.join(options.target, file)
+      : undefined
 
     // a log object, which will be passed to each task by-reference
     const log = {
@@ -121,11 +126,8 @@ function processFiles (files, options, tasks) {
     // process
     processFile(srcFile, trgFile, tasks, log)
 
-    // add path
-    // log['file path'] = trgFile
-
     // return
-    return { file, log }
+    return { file, path: trgFile || srcFile, log }
   })
 }
 

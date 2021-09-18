@@ -8,36 +8,52 @@ const { processFiles } = require('./process')
 const { getTasks } = require('./tasks')
 const { State } = require('./process.js')
 
+// ---------------------------------------------------------------------------------------------------------------------
+// utils
+// ---------------------------------------------------------------------------------------------------------------------
+
 const cwd = process.cwd()
 
 /**
  * Build options for main watch task
  *
- * @param   {string}  source    A relative or absolute source folder path
- * @param   {string}  target    A relative or absolute target folder path
- * @param   {object}  flags     A hash of task names
+ * @param   {string}    source   A relative or absolute source folder path
+ * @param   {string}   [target]  A optional relative or absolute target folder path
+ * @param   {object}   [flags]   A optional hash of task names
  * @return  {{source, target, tasks}|void}
  */
-function makeOptions (source, target, flags = {}) {
+function makeOptions (source, target = '', flags = {}) {
   const options = {
     source,
     target,
     tasks: {
-      outline: true,
+      outline: true, // always outline
       autosize: flags.autosize,
     },
   }
 
   // if we have source and target, begin
-  if (source && target) {
-    // convert all paths to absolute
-    options.source = Path.resolve(cwd, options.source)
-    options.target = Path.resolve(cwd, options.target)
+  if (source) {
+    // convert paths to absolute
+    // options.source = Path.resolve(cwd, options.source)
+    if (options.target) {
+      // options.target = Path.resolve(cwd, options.target)
+    }
 
     // make sure source folder exists
     if (!Fs.existsSync(options.source)) {
-      log(`Source folder "${Path.relative(cwd, options.source)}" does not exist`)
+      log(`source folder "${Path.relative(cwd, options.source)}" does not exist`)
       return
+    }
+
+    // make sure target is not inside source
+    if (target) {
+      const absSource = Path.resolve(source)
+      const absTarget = Path.resolve(target)
+      if (absTarget.startsWith(absSource)) {
+        log(`target folder cannot be inside source folder`)
+        return
+      }
     }
 
     // debug
@@ -49,7 +65,7 @@ function makeOptions (source, target, flags = {}) {
 
   // if no source, complain
   else {
-    log('Please specify source (and optionally target) folders')
+    log('please specify source (and optionally target) folders')
   }
 }
 
@@ -72,10 +88,10 @@ function logResults (results) {
   // add rows
   results.forEach(result => {
     // variables
-    const { file, log } = result
+    const { file, path, log } = result
 
     // filename
-    let filename = file.replace('/', '').replace('.svg', '')
+    let filename = path//.replace(/.svg$/, '')
     if (log.state === State.UPDATED) {
       filename = filename.brightWhite
     }
