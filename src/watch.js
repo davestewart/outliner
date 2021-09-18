@@ -94,8 +94,33 @@ function logResults (results) {
   console.log(table.toString())
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+// watching
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * the list of files waiting to be processed
+ *
+ * We keep track of this so files are processed in batches
+ *
+ * @type {string[]}
+ */
+let pendingFiles = []
+
+/**
+ * The list of files being processed
+ *
+ * We keep track of this so when source files are overwritten, they don't get reprocessed
+ *
+ * @type {string[]}
+ */
+let currentFiles = []
+
 /**
  * Main function to watch a folder
+ *
+ * There's some trickery with sets of files and timeouts; this is to prevent source files
+ * from being processed twice; @see https://github.com/davestewart/outliner/issues/25
  *
  * @param {object}    options             Options to pass to the script
  * @param {string}    options.source      Source folder path (relative or absolute)
@@ -103,39 +128,55 @@ function logResults (results) {
  * @param {object}    options.tasks       A hash of tasks to process
  */
 function watchFolder (options) {
-  // variables
+  // timeout variables
+  const delayStart = 500
+  const delayClear = 500
   let timeoutId = 0
-  let timeout = 500
-  let files = []
 
   // get tasks
   const tasks = getTasks(options.tasks)
 
   // callback
-  const onChange = filepath => {
+  const onChange = absPath => {
+    // rel path
+    const relPath = absPath.replace(options.source, '')
+
+    // ignore files that are already being / have just been processed
+    if (currentFiles.includes(relPath)) {
+      return
+    }
+
     // add changed file
-    files.push(filepath.replace(options.source, ''))
+    pendingFiles.push(relPath)
 
     // clear previous timeout
     clearTimeout(timeoutId)
 
     // delay processing
     timeoutId = setTimeout(() => {
-      const results = processFiles(files, options, tasks)
+      // set pending files as current
+      currentFiles = [...pendingFiles]
+      pendingFiles = []
+
+      // process files
+      const results = processFiles(currentFiles, options, tasks)
+
+      // clear current files after a short delay
+      setTimeout(() => {
+        currentFiles = []
+      }, delayClear)
+
+      // log results
       if (results && results.length) {
         logResults(results)
       }
-      else {
-        log('Nothing to process')
-      }
-      files = []
-    }, timeout)
+    }, delayStart)
   }
 
   // watch
   const glob = Path.join(options.source, '**/*.svg')
   chokidar
-    .watch(glob, { persistent: true })
+    .watch(glob)
     .on('add', onChange)
     .on('change', onChange)
 }
