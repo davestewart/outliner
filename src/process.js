@@ -1,6 +1,15 @@
 Path = require('path')
 const { readFile, writeFile, copyFile } = require('./utils/file.js')
 
+const State = Object.freeze({
+  NO_FILE: 'no file',
+  NO_DATA: 'no data',
+  NO_WRITE: 'no write',
+  NO_CHANGE: 'no change',
+  UPDATED: 'updated',
+  COPIED: 'copied',
+})
+
 /**
  * Process SVG text
  *
@@ -37,7 +46,7 @@ function processFile (src, trg, tasks, log = {}) {
 
   // no file
   if (input === undefined) {
-    log.state = 'no file'
+    log.state = State.NO_FILE
     return ''
   }
 
@@ -48,42 +57,42 @@ function processFile (src, trg, tasks, log = {}) {
 
     // if the SVG was updated, write the file
     if (output !== input) {
-      log.state = 'updated'
+      log.state = State.UPDATED
     }
 
     // if no change, but target folder, copy the file
     else if (trg !== src) {
-      log.state = 'copied'
+      log.state = State.COPIED
     }
 
     // otherwise, skip
     else {
-      log.state = 'skipped'
+      log.state = State.NO_CHANGE
       return output
     }
   }
 
-  // no input
+  // no data
   else {
-    log.state = 'no input'
+    log.state = State.NO_DATA
     return output || ''
   }
 
   // if trg is false, skip
   if (trg === false || trg === null) {
-    log.state = 'no write'
+    log.state = State.NO_WRITE
     return output
   }
 
   // check to see if new output is different from old output
   const oldOutput = readFile(trg)
   if (output === oldOutput) {
-    log.state = 'skipped'
+    log.state = State.NO_CHANGE
     return output
   }
 
   // if we get here, write to disk
-  log.state === 'updated'
+  log.state === State.UPDATED
     ? writeFile(trg, output)
     : copyFile(src, trg)
 
@@ -124,4 +133,5 @@ module.exports = {
   processFiles,
   processFile,
   processSvg,
+  State,
 }

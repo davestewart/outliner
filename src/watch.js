@@ -6,6 +6,7 @@ const chokidar = require('chokidar')
 const { colorize, log } = require('./utils')
 const { processFiles } = require('./process')
 const { getTasks } = require('./tasks')
+const { State } = require('./process.js')
 
 const cwd = process.cwd()
 
@@ -75,7 +76,7 @@ function logResults (results) {
 
     // filename
     let filename = file.replace('/', '').replace('.svg', '')
-    if (log.state === 'updated') {
+    if (log.state === State.UPDATED) {
       filename = filename.brightWhite
     }
     else {

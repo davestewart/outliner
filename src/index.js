@@ -1,4 +1,4 @@
-const { processSvg, processFile } = require('./process.js')
+const { processSvg, processFile, State } = require('./process.js')
 const { getTasks, DEFAULT_TASKS } = require('./tasks')
 
 function outlineFile (src, trg, tasks = DEFAULT_TASKS, log = {}) {
@@ -12,4 +12,5 @@ function outlineSvg (svg, tasks = DEFAULT_TASKS, log = {}) {
 module.exports = {
   outlineFile,
   outlineSvg,
+  State,
 }
