@@ -84,7 +84,7 @@ function logResults (results) {
     }
 
     // cells
-    const cells = headers.map(name => log[name]).map(value => colorize(value))
+    const cells = headers.map(name => log[name]).map(value => value !== undefined ? colorize(value) : '')
 
     // row
     table.push([filename, ...cells])
@@ -105,7 +105,7 @@ function logResults (results) {
 function watchFolder (options) {
   // variables
   let timeoutId = 0
-  let timeout = 250
+  let timeout = 500
   let files = []
 
   // get tasks
