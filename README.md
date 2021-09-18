@@ -4,20 +4,47 @@
 
 ## Intro
 
+### Overview
+
 Outliner is a Node package that converts SVG strokes to outlined fills as a *post-export* process:
 
 ![process](https://raw.githubusercontent.com/davestewart/outliner/master/assets/artwork/process.png)
 
-There are several reasons why retaining strokes within software such as [Figma](https://twitter.com/figmadesign) or [Sketch](https://twitter.com/sketch) is preferable:
+Outliner is designed for:
+
+- icon creators; no more locking in those curves and losing your vector tweaks!
+- developers; work with clean SVG conversions and manipulate attributes in code
+
+### Why outline strokes?
+
+HTML + SVG + CSS is perfect for things like icons, however SVG + CSS may not always provide the intended result as you can see from this [comparison](./demo/comparison.html):  
+
+![comparison](https://raw.githubusercontent.com/davestewart/outliner/master/assets/artwork/comparison.png)
+
+If your aim is to make colorising your icons predictable, then there are two main options:
+
+- replace SVG colours with the CSS `currentColor` variable
+- outline strokes
+
+Using `currentColor` is an easy win, but you lose the icon's original color information (so not good for two-color icons). Outlining strokes is a more flexible, reliable, production-ready option.
+
+The choice is up to you of course!
+
+### Why the "post-export" process?
+
+Processing your SVGs files after they have been exported enables you to keep strokes and retain flexibility within [Figma](https://twitter.com/figmadesign) or [Sketch](https://twitter.com/sketch):
 
 - strokes allow you to adjust widths and corner radii on the fly
 - outlined objects cannot be changed once outlined
 - union operators close open paths (Sketch) or create heavy exports (Figma)
 
-This tool is designed for:
+### Are there any drawbacks?
 
-- icon creators; no more locking in those curves and losing your vector tweaks!
-- developers; work with clean SVG conversions and manipulate attributes in code
+There are a few things to consider:
+
+1. stroke conversion does not always work first time; you may need to tweak your original vectors; adjusting layer order or redrawing some simple shapes can work. Note that it seems to rarely happen on simple shapes, and there is [a ticket open](https://github.com/davestewart/outliner/issues/1) to look at this again.
+2. some join caps [don't seem to properly convert](https://github.com/davestewart/outliner/blob/main/src/tasks/outline.js#L34), so the package currently forces round caps.
+3. if you want to be sure the graphic you see in your drawing package is the same as the one that is saved to disk, you may want to stick to outlining in your drawing package (though be aware, exported outlines from your package of choice [may be heavier than you expected](https://twitter.com/dave_stewart/status/1437980506205958148)).
 
 ## Getting started
 
