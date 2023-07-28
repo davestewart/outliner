@@ -72,7 +72,7 @@ npm install @davestewart/outliner --global
 To start converting, call the `outliner` service passing `source` and (optional) `target` paths:
 
 ```
-node outliner <source> <target>
+outliner <source> <target>
 ```
 
 Note:
@@ -82,7 +82,7 @@ Note:
 - To remove `width` and `height` information (so they resize nicely) pass the `--autosize` flag:
 
 ```
-node outliner <source> <target> --autosize
+outliner <source> <target> --autosize
 ```
 
 ### As a project service
@@ -104,7 +104,7 @@ Then, add a script entry to your project's `package.json`, e.g.:
 ```json
 {
   "scripts": {
-    "outline-icons": "node outliner <source> <target> --autosize"
+    "outline-icons": "outliner <source> <target> --autosize"
   }
 }
 ```
